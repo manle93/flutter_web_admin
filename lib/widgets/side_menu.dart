@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_admin/constant/controller.dart';
 import 'package:flutter_web_admin/constant/style.dart';
+import 'package:flutter_web_admin/helpers/firebase_helper.dart';
 import 'package:flutter_web_admin/helpers/responsiveness.dart';
 import 'package:flutter_web_admin/routing/routes.dart';
 import 'package:flutter_web_admin/widgets/side_menu_item.dart';
@@ -57,8 +58,9 @@ class SideMenu extends StatelessWidget {
             children: sideMenuItemRoutes
                 .map((item) => SideMenuItem(
                     itemName: item.name,
-                    onTap: () {
+                    onTap: () async {
                       if (item.route == authenticationPageRoute) {
+                        await signOut();
                         Get.offAllNamed(authenticationPageRoute);
                         menuController
                             .changeActiveItemTo(overviewPageDisplayName);

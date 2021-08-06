@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_admin/constant/style.dart';
+import 'package:flutter_web_admin/helpers/firebase_helper.dart';
 import 'package:flutter_web_admin/routing/routes.dart';
 import 'package:flutter_web_admin/widgets/custom_text.dart';
 import 'package:get/get.dart';
@@ -7,8 +8,20 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'widgets/google_button.dart';
 
-class AuthenticationPage extends StatelessWidget {
-  const AuthenticationPage({Key? key}) : super(key: key);
+class AuthenticationPage extends StatefulWidget {
+  AuthenticationPage({Key? key}) : super(key: key);
+
+  @override
+  _AuthenticationPageState createState() => _AuthenticationPageState();
+}
+
+class _AuthenticationPageState extends State<AuthenticationPage> {
+  TextEditingController _emailController = TextEditingController();
+
+  TextEditingController _passwordController = TextEditingController();
+
+  String? _errorText;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +66,7 @@ class AuthenticationPage extends StatelessWidget {
                 height: 15,
               ),
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                     labelText: "Email",
                     hintText: "abc@domain.com",
@@ -63,6 +77,7 @@ class AuthenticationPage extends StatelessWidget {
                 height: 15,
               ),
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                     labelText: "Password",
@@ -91,8 +106,14 @@ class AuthenticationPage extends StatelessWidget {
                 height: 15,
               ),
               InkWell(
-                onTap: () {
-                  Get.offAllNamed(rootRoute);
+                onTap: () async {
+                  var res = await signInWithEmailPassword(
+                      _emailController.text, _passwordController.text);
+                  if (res != null) {
+                    Get.offAllNamed(rootRoute);
+                  } else {
+                    setState(() => _errorText = 'Invalid Email or password!');
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -108,6 +129,16 @@ class AuthenticationPage extends StatelessWidget {
               ),
               SizedBox(
                 height: 15,
+              ),
+              Visibility(
+                visible: _errorText != null,
+                child: Text(
+                  _errorText ?? '',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.red,
+                  ),
+                ),
               ),
               RichText(
                   text: TextSpan(children: [
